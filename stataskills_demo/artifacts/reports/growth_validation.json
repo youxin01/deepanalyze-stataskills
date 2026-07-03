@@ -1,50 +1,44 @@
 {
   "task": "growth",
-  "expected_tools": [
-    "read_csv",
-    "describe",
-    "check_missing_values",
-    "detect_outliers",
-    "correlation_analysis",
+  "core_tools": [
     "contingency_test",
     "ab_ttest",
-    "bootstrap_abtest",
-    "ab_power_analysis"
+    "bootstrap_abtest"
   ],
   "run_tool_calls": [
-    "ab_power_analysis",
+    "ab_test",
     "ab_ttest",
-    "bootstrap_abtest",
     "check_missing_values",
-    "contingency_test",
-    "correlation_analysis",
-    "describe",
-    "detect_outliers",
-    "read_csv"
+    "read_csv",
+    "ttest",
+    "two_sample_test"
   ],
-  "expected_tools_seen": [
-    "ab_power_analysis",
+  "canonical_run_tool_calls": [
     "ab_ttest",
-    "bootstrap_abtest",
     "check_missing_values",
-    "contingency_test",
-    "correlation_analysis",
-    "describe",
-    "detect_outliers",
-    "read_csv"
+    "read_csv",
+    "two_sample_test"
   ],
-  "unknown_tools": [],
-  "report_function_hits": [],
+  "core_tools_seen": [
+    "ab_ttest"
+  ],
+  "non_read_tools_seen": [
+    "ab_ttest",
+    "check_missing_values",
+    "two_sample_test"
+  ],
+  "unknown_tools": [
+    "two_sample_test"
+  ],
   "forbidden_terms": [],
   "failed_checks": [],
   "warnings": [
-    "clean report does not spell out stataskills.run_tool function names"
+    "unknown stataskills tools attempted in raw output: ['two_sample_test']"
   ],
   "passed": true,
-  "raw_chars": 16621,
-  "report_chars": 1353,
+  "raw_chars": 21405,
+  "report_chars": 657,
   "downloaded_generated_files": [
-    "/nfsdata/zyx/statabench/StatABench/artifacts/reports/generated/growth/FACTS_FOR_REPORT.json",
-    "/nfsdata/zyx/statabench/StatABench/artifacts/reports/generated/growth/Conversation_Report_20260703_172545.md"
+    "/nfsdata/zyx/statabench/skills-create/deepanalyze-stataskills-release/stataskills_demo/artifacts/reports/generated/growth/Conversation_Report_20260704_025211.md"
   ]
 }

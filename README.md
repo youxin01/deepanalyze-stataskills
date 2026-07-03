@@ -97,11 +97,11 @@ stataskills_demo/artifacts/reports/
 
 This repository includes three reproducible examples:
 
-| Task | Scenario | Main statistical tools |
+| Task | Scenario | Observed stataskills usage |
 |---|---|---|
-| `hospital` | Hospital operations and patient outcomes | regression, time series, survival analysis |
-| `growth` | Product growth and conversion experiment | A/B testing, contingency test, bootstrap, power analysis |
-| `policy` | Policy effect and causal evaluation | DID, placebo DID, PSM, synthetic control |
+| `hospital` | Hospital operations and ER pressure | `linear_regression` / `correlation_analysis` style calls |
+| `growth` | Product growth and conversion experiment | A/B-style tests and data quality checks |
+| `policy` | Policy effect evaluation | regression/DID-style analysis on policy panel data |
 
 Each example includes:
 
@@ -109,6 +109,8 @@ Each example includes:
 - the required CSV datasets
 - the original DeepAnalyze report
 - raw model output and validation files
+
+The prompts are intentionally short and human-like. They do not include required code blocks or a tool checklist. Validation only checks that DeepAnalyze really called `stataskills.run_tool(...)` at least once and produced a non-empty report; warnings preserve model trial-and-error such as attempted unknown tool names.
 
 ## Validate the Toolkit
 

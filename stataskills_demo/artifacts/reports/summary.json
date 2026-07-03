@@ -9,5 +9,5 @@
     "growth": true,
     "policy": true
   },
-  "report_dir": "/nfsdata/zyx/statabench/StatABench/artifacts/reports"
+  "report_dir": "/nfsdata/zyx/statabench/skills-create/deepanalyze-stataskills-release/stataskills_demo/artifacts/reports"
 }

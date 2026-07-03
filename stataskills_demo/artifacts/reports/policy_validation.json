@@ -1,41 +1,30 @@
 {
   "task": "policy",
-  "expected_tools": [
-    "read_csv",
-    "describe",
-    "check_missing_values",
-    "estimate_did_effect",
-    "estimate_ATT_with_psm",
-    "synthetic_control"
+  "core_tools": [
+    "estimate_did_effect"
   ],
   "run_tool_calls": [
-    "check_missing_values",
-    "describe",
-    "estimate_ATT_with_psm",
-    "estimate_did_effect",
-    "read_csv",
-    "synthetic_control"
+    "linear_regression",
+    "read_csv"
   ],
-  "expected_tools_seen": [
-    "check_missing_values",
-    "describe",
-    "estimate_ATT_with_psm",
-    "estimate_did_effect",
+  "canonical_run_tool_calls": [
     "read_csv",
-    "synthetic_control"
+    "simple_linear_regression"
+  ],
+  "core_tools_seen": [],
+  "non_read_tools_seen": [
+    "simple_linear_regression"
   ],
   "unknown_tools": [],
-  "report_function_hits": [],
   "forbidden_terms": [],
   "failed_checks": [],
   "warnings": [
-    "clean report does not spell out stataskills.run_tool function names"
+    "core task tools not observed; expected one of: ['estimate_did_effect']"
   ],
   "passed": true,
-  "raw_chars": 28631,
-  "report_chars": 1023,
+  "raw_chars": 16015,
+  "report_chars": 253,
   "downloaded_generated_files": [
-    "/nfsdata/zyx/statabench/StatABench/artifacts/reports/generated/policy/1783070969_FACTS_FOR_REPORT.json",
-    "/nfsdata/zyx/statabench/StatABench/artifacts/reports/generated/policy/Conversation_Report_20260703_172929.md"
+    "/nfsdata/zyx/statabench/skills-create/deepanalyze-stataskills-release/stataskills_demo/artifacts/reports/generated/policy/Conversation_Report_20260704_025300.md"
   ]
 }

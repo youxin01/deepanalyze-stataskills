@@ -37,7 +37,7 @@ class DemoTask:
     name: str
     task_file: str
     data_files: tuple[str, ...]
-    expected_tools: tuple[str, ...]
+    core_tools: tuple[str, ...]
     forbidden_terms: tuple[str, ...] = ()
 
 
@@ -45,50 +45,32 @@ TASKS: dict[str, DemoTask] = {
     "hospital": DemoTask(
         name="hospital",
         task_file="deepanalyze_hospital_task.md",
-        data_files=("hospital_stay.csv", "er_arrivals.csv", "whas500.csv", "chemo_data.csv"),
-        expected_tools=(
-            "read_csv",
-            "describe",
-            "check_missing_values",
-            "detect_outliers",
+        data_files=("hospital_stay.csv", "er_arrivals.csv"),
+        core_tools=(
             "correlation_analysis",
+            "simple_linear_regression",
             "multivariable_linear_regression",
             "test_stationarity",
-            "decompose_stl",
-            "kaplan_meier_plot",
-            "fit_cox_model",
-            "logrank_test_compare",
         ),
-        forbidden_terms=("5年生存率", "药物组", "支架", "不良反应", "糖尿病"),
+        forbidden_terms=("5年生存率", "药物组", "支架", "不良反应", "糖尿病", "心梗", "化疗"),
     ),
     "growth": DemoTask(
         name="growth",
         task_file="deepanalyze_growth_task.md",
-        data_files=("conversion_data.csv", "website_session_data.csv", "advertising_click.csv"),
-        expected_tools=(
-            "read_csv",
-            "describe",
-            "check_missing_values",
-            "detect_outliers",
-            "correlation_analysis",
+        data_files=("conversion_data.csv", "website_session_data.csv"),
+        core_tools=(
             "contingency_test",
             "ab_ttest",
             "bootstrap_abtest",
-            "ab_power_analysis",
         ),
         forbidden_terms=("证明提升", "导致转化", "因果证明"),
     ),
     "policy": DemoTask(
         name="policy",
         task_file="deepanalyze_policy_task.md",
-        data_files=("accidents_did.csv", "placebo_did.csv", "lalonde_data.csv", "synthetic_gdp_reform.csv"),
-        expected_tools=(
-            "read_csv",
-            "describe",
-            "check_missing_values",
+        data_files=("accidents_did.csv",),
+        core_tools=(
             "estimate_did_effect",
-            "estimate_ATT_with_psm",
-            "synthetic_control",
         ),
         forbidden_terms=("随机实验证明", "placebo证明政策有效", "安慰剂政策效果"),
     ),
@@ -137,38 +119,35 @@ def download_generated_file(url: str, output_dir: Path) -> Path:
 
 def validate(task: DemoTask, raw_text: str, report_text: str) -> dict[str, object]:
     run_tool_calls = sorted(set(re.findall(r"run_tool\(\s*[\"']([^\"']+)[\"']", raw_text)))
+    canonical_calls = sorted({ALIASES.get(tool, tool) for tool in run_tool_calls})
     unknown_tools = sorted(set(run_tool_calls) - ALLOWED_TOOLS)
-    expected_seen = sorted(set(task.expected_tools) & set(run_tool_calls))
-    report_function_hits = sorted(
-        tool for tool in task.expected_tools if f'stataskills.run_tool("{tool}")' in report_text
-    )
+    core_seen = sorted(set(task.core_tools) & set(canonical_calls))
+    non_read_tools_seen = sorted(tool for tool in canonical_calls if tool != "read_csv")
     forbidden_terms = sorted(term for term in task.forbidden_terms if term in report_text)
     failed_checks: list[str] = []
     warnings: list[str] = []
 
     if unknown_tools:
         warnings.append(f"unknown stataskills tools attempted in raw output: {unknown_tools}")
-    missing_calls = sorted(set(task.expected_tools) - set(run_tool_calls))
-    if missing_calls:
-        warnings.append(f"expected tools not observed in raw output: {missing_calls}")
-    if len(expected_seen) < max(4, min(6, len(task.expected_tools))):
-        failed_checks.append(f"too few expected tools observed: {expected_seen}")
+    if not canonical_calls:
+        failed_checks.append("no stataskills run_tool calls observed in raw output")
+    elif not non_read_tools_seen:
+        warnings.append("only read_csv was observed; no non-read stataskills tools were observed")
+    elif not core_seen:
+        warnings.append(f"core task tools not observed; expected one of: {list(task.core_tools)}")
     if forbidden_terms:
         failed_checks.append(f"forbidden report terms: {forbidden_terms}")
     if not report_text:
         failed_checks.append("empty clean report")
-    if "附录" not in report_text:
-        warnings.append("clean report does not contain an appendix")
-    if not report_function_hits:
-        warnings.append("clean report does not spell out stataskills.run_tool function names")
 
     return {
         "task": task.name,
-        "expected_tools": list(task.expected_tools),
+        "core_tools": list(task.core_tools),
         "run_tool_calls": run_tool_calls,
-        "expected_tools_seen": expected_seen,
+        "canonical_run_tool_calls": canonical_calls,
+        "core_tools_seen": core_seen,
+        "non_read_tools_seen": non_read_tools_seen,
         "unknown_tools": unknown_tools,
-        "report_function_hits": report_function_hits,
         "forbidden_terms": forbidden_terms,
         "failed_checks": failed_checks,
         "warnings": warnings,

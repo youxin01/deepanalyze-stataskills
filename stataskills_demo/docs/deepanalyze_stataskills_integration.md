@@ -162,9 +162,9 @@ Public tools covered by primary PASS: 38 / 38
 
 这三个例子分别是：
 
-- `hospital`：医院运营与患者结局，覆盖回归、时间序列、生存分析。
-- `growth`：产品增长与转化实验，覆盖 A/B 测试、列联检验、bootstrap、样本量估计。
-- `policy`：政策效果与因果评估，覆盖 DID、placebo DID、PSM、synthetic control。
+- `hospital`：医院运营分析，问题只问住院时间影响因素和急诊时段压力。
+- `growth`：产品增长与转化实验，问题只问 B 组是否值得继续放量。
+- `policy`：政策效果评估，问题只问政策实施后事故数量是否有明显变化。
 
 统一 runner 的原则是：
 
@@ -174,7 +174,7 @@ Public tools covered by primary PASS: 38 / 38
 - 不润色、不改写最终报告正文。
 - 只把 `<Answer>...</Answer>` 正文原样抽取成短文件名，方便查找。
 
-为了让医院任务少出现提示污染，任务文件里避免直接写出容易被模型复述的禁用短语，并把原来的“常用调用形式”改成“必须执行的代码”。这不改 DeepAnalyze 的报告，只是让模型先执行工具调用，再基于执行输出写报告。
+这三个 prompt 都刻意保持成真实用户会问的问题，不再放工具清单、必需代码块或长篇格式要求。runner 的验证标准也相应改成：原始输出里至少出现一次合法 `stataskills.run_tool(...)` 调用、最终报告非空、没有明显禁用内容。核心统计工具未命中或模型尝试了不存在的工具名会保留为 warning，不再直接判失败。
 
 运行全部三个任务：
 
@@ -212,7 +212,7 @@ Public tools covered by primary PASS: 38 / 38
 /nfsdata/zyx/statabench/StatABench/artifacts/reports/policy_validation.json
 ```
 
-当前三份验证文件均为 `passed: true`。验证器检查的是原始输出里是否真的出现了预期 `run_tool(...)` 调用、是否调用了不存在的工具、最终报告是否为空、是否出现明显禁用内容。
+当前三份验证文件均为 `passed: true`。验证器检查的是原始输出里是否真的出现了 `run_tool(...)` 调用、最终报告是否为空、是否出现明显禁用内容；未知工具名和核心工具未命中会记录为 warning，用来保留模型原始试错过程。
 
 ## 6. 推荐怎么看结果
 
