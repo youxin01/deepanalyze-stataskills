@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stataskills"
+version = "0.1.0"
+description = "StatABench statistical toolkit packaged for Python code-execution agents"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "statsmodels",
+    "scikit-learn",
+]
+
+[project.optional-dependencies]
+full = [
+    "pingouin",
+    "pmdarima",
+    "lifelines",
+    "pymc",
+    "arviz",
+    "cvxpy",
+]
+
+[tool.setuptools]
+packages = ["stataskills"]

@@ -1,0 +1,56 @@
+{
+  "task": "hospital",
+  "expected_tools": [
+    "read_csv",
+    "describe",
+    "check_missing_values",
+    "detect_outliers",
+    "correlation_analysis",
+    "multivariable_linear_regression",
+    "test_stationarity",
+    "decompose_stl",
+    "kaplan_meier_plot",
+    "fit_cox_model",
+    "logrank_test_compare"
+  ],
+  "run_tool_calls": [
+    "check_missing_values",
+    "correlation_analysis",
+    "decompose_stl",
+    "describe",
+    "detect_outliers",
+    "fit_cox_model",
+    "kaplan_meier_plot",
+    "logrank_test_compare",
+    "multivariable_linear_regression",
+    "read_csv",
+    "test_stationarity"
+  ],
+  "expected_tools_seen": [
+    "check_missing_values",
+    "correlation_analysis",
+    "decompose_stl",
+    "describe",
+    "detect_outliers",
+    "fit_cox_model",
+    "kaplan_meier_plot",
+    "logrank_test_compare",
+    "multivariable_linear_regression",
+    "read_csv",
+    "test_stationarity"
+  ],
+  "unknown_tools": [],
+  "report_function_hits": [],
+  "forbidden_terms": [],
+  "failed_checks": [],
+  "warnings": [
+    "clean report does not spell out stataskills.run_tool function names"
+  ],
+  "passed": true,
+  "raw_chars": 12558,
+  "report_chars": 1419,
+  "downloaded_generated_files": [
+    "/nfsdata/zyx/statabench/StatABench/artifacts/reports/generated/hospital/1783071410_FACTS_FOR_REPORT.json",
+    "/nfsdata/zyx/statabench/StatABench/artifacts/reports/generated/hospital/Conversation_Report_20260703_173650.md"
+  ]
+}

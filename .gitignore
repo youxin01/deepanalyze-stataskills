@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+
+# Runtime state
+workspace/
+workspaces/
+logs/
+*.log
+
+# Secrets / local config
+.env
+.env.*
+keys.json
+*.key
+
+# Models and large local caches
+models/
+checkpoints/
+*.safetensors
+*.bin
+*.pt
+*.pth
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

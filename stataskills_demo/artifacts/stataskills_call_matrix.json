@@ -1,0 +1,508 @@
+{
+  "generated_at": "2026-07-03 19:03:45",
+  "summary": {
+    "total_cases": 55,
+    "passed": 55,
+    "failed": 0,
+    "public_tools": 38,
+    "public_tools_with_primary_pass": 38,
+    "missing_primary_tools": []
+  },
+  "records": [
+    {
+      "case_id": "read_csv.primary",
+      "tool": "read_csv",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.001,
+      "summary": "DataFrame shape=(800, 4)",
+      "error": ""
+    },
+    {
+      "case_id": "describe.primary",
+      "tool": "describe",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.003,
+      "summary": "dict keys=['Length_of_Stay_days']",
+      "error": ""
+    },
+    {
+      "case_id": "calculate_statistic.primary",
+      "tool": "calculate_statistic",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.002,
+      "summary": "15.130500000000001",
+      "error": ""
+    },
+    {
+      "case_id": "check_missing_values.primary",
+      "tool": "check_missing_values",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.002,
+      "summary": "dict keys=['Age', 'Cholesterol']",
+      "error": ""
+    },
+    {
+      "case_id": "detect_outliers.primary",
+      "tool": "detect_outliers",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.002,
+      "summary": "dict keys=['Length_of_Stay_days']",
+      "error": ""
+    },
+    {
+      "case_id": "check_column_type_is.primary",
+      "tool": "check_column_type_is",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.001,
+      "summary": "dict keys=['Sex']",
+      "error": ""
+    },
+    {
+      "case_id": "show_csv_info_en.primary",
+      "tool": "show_csv_info_en",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.002,
+      "summary": "\"\\n        Dataset name\\n    hospital_stay.csv\\n        Dataset first 5 rows:\\n     Length_of_Stay_days  Patient_Age  Severity_Score  Is_Surgical\\n            7",
+      "error": ""
+    },
+    {
+      "case_id": "read_file.primary.txt",
+      "tool": "read_file",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.0,
+      "summary": "'stataskills verification text file\\n'",
+      "error": ""
+    },
+    {
+      "case_id": "read_file.branch.csv",
+      "tool": "read_file",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.0,
+      "summary": "list len=3",
+      "error": ""
+    },
+    {
+      "case_id": "read_file.branch.md",
+      "tool": "read_file",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.0,
+      "summary": "'# stataskills verification\\n'",
+      "error": ""
+    },
+    {
+      "case_id": "correlation_analysis.primary.pearson",
+      "tool": "correlation_analysis",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.001,
+      "summary": "dict keys=['type', 'shape', 'columns', 'head']",
+      "error": ""
+    },
+    {
+      "case_id": "correlation_analysis.branch.partial",
+      "tool": "correlation_analysis",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.005,
+      "summary": "dict keys=['type', 'shape', 'columns', 'head']",
+      "error": ""
+    },
+    {
+      "case_id": "ci_normal.primary.mean",
+      "tool": "ci_normal",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.0,
+      "summary": "list len=2",
+      "error": ""
+    },
+    {
+      "case_id": "ci_normal.branch.variance",
+      "tool": "ci_normal",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.0,
+      "summary": "list len=2",
+      "error": ""
+    },
+    {
+      "case_id": "ci_two_normal.primary.mean_diff",
+      "tool": "ci_two_normal",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.0,
+      "summary": "list len=2",
+      "error": ""
+    },
+    {
+      "case_id": "ci_two_normal.branch.var_ratio",
+      "tool": "ci_two_normal",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.0,
+      "summary": "list len=2",
+      "error": ""
+    },
+    {
+      "case_id": "contingency_test.primary.chisquare",
+      "tool": "contingency_test",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.005,
+      "summary": "dict keys=['method', 'statistic', 'p_value', 'dof']",
+      "error": ""
+    },
+    {
+      "case_id": "contingency_test.branch.fisher",
+      "tool": "contingency_test",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.003,
+      "summary": "dict keys=['method', 'odds_ratio', 'p_value']",
+      "error": ""
+    },
+    {
+      "case_id": "contingency_test.branch.mantel",
+      "tool": "contingency_test",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.006,
+      "summary": "dict keys=['method', 'common_odds_ratio', 'ci95', 'p_value']",
+      "error": ""
+    },
+    {
+      "case_id": "ks_test.primary.one_sample",
+      "tool": "ks_test",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.003,
+      "summary": "dict keys=['test', 'column', 'distribution', 'statistic', 'p_value']",
+      "error": ""
+    },
+    {
+      "case_id": "ks_test.branch.two_sample",
+      "tool": "ks_test",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.002,
+      "summary": "dict keys=['test', 'columns', 'statistic', 'p_value']",
+      "error": ""
+    },
+    {
+      "case_id": "mood_variance_test.primary",
+      "tool": "mood_variance_test",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.001,
+      "summary": "dict keys=['method', 'statistic', 'p_value']",
+      "error": ""
+    },
+    {
+      "case_id": "nonparametric_test.primary.mannwhitney",
+      "tool": "nonparametric_test",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.002,
+      "summary": "dict keys=['method', 'statistic', 'p_value']",
+      "error": ""
+    },
+    {
+      "case_id": "nonparametric_test.branch.wilcoxon",
+      "tool": "nonparametric_test",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.001,
+      "summary": "dict keys=['method', 'statistic', 'p_value']",
+      "error": ""
+    },
+    {
+      "case_id": "nonparametric_test.branch.kruskal",
+      "tool": "nonparametric_test",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.002,
+      "summary": "dict keys=['method', 'statistic', 'p_value']",
+      "error": ""
+    },
+    {
+      "case_id": "fdr_control_df.primary.bh",
+      "tool": "fdr_control_df",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.003,
+      "summary": "dict keys=['type', 'shape', 'columns', 'head']",
+      "error": ""
+    },
+    {
+      "case_id": "fdr_control_df.branch.by",
+      "tool": "fdr_control_df",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.002,
+      "summary": "dict keys=['type', 'shape', 'columns', 'head']",
+      "error": ""
+    },
+    {
+      "case_id": "fwer_control_df.primary.bonferroni",
+      "tool": "fwer_control_df",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.002,
+      "summary": "dict keys=['type', 'shape', 'columns', 'head']",
+      "error": ""
+    },
+    {
+      "case_id": "fwer_control_df.branch.holm",
+      "tool": "fwer_control_df",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.008,
+      "summary": "dict keys=['type', 'shape', 'columns', 'head']",
+      "error": ""
+    },
+    {
+      "case_id": "simple_linear_regression.primary",
+      "tool": "simple_linear_regression",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.01,
+      "summary": "dict keys=['model', 'intercept', 'coefficient', 'r_squared', 'p_value', 'summary']",
+      "error": ""
+    },
+    {
+      "case_id": "multivariable_linear_regression.primary",
+      "tool": "multivariable_linear_regression",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.007,
+      "summary": "dict keys=['model', 'coefficients', 'pvalues', 'r_squared', 'adj_r_squared', 'vif']",
+      "error": ""
+    },
+    {
+      "case_id": "run_glm.primary.gaussian",
+      "tool": "run_glm",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.006,
+      "summary": "dict keys=['method', 'model', 'coefficients', 'std_errors', 'pvalues', 'aic', 'bic', 'pseudo_r2']",
+      "error": ""
+    },
+    {
+      "case_id": "run_glm.branch.logistic",
+      "tool": "run_glm",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.009,
+      "summary": "dict keys=['method', 'model', 'coefficients', 'std_errors', 'pvalues', 'aic', 'bic', 'pseudo_r2']",
+      "error": ""
+    },
+    {
+      "case_id": "run_glm.branch.poisson",
+      "tool": "run_glm",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.028,
+      "summary": "dict keys=['method', 'model', 'coefficients', 'std_errors', 'pvalues', 'aic', 'bic', 'pseudo_r2']",
+      "error": ""
+    },
+    {
+      "case_id": "huber_regression.primary",
+      "tool": "huber_regression",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.006,
+      "summary": "dict keys=['method', 'model', 'coefficients', 'std_errors', 'pvalues', 'scale', 'converged']",
+      "error": ""
+    },
+    {
+      "case_id": "advanced_regression.primary",
+      "tool": "advanced_regression",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.035,
+      "summary": "dict keys=['method', 'model', 'best_alpha', 'coefficients', 'r2', 'rmse', 'y_test', 'y_pred']",
+      "error": ""
+    },
+    {
+      "case_id": "sparse_pca_analysis.primary",
+      "tool": "sparse_pca_analysis",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.104,
+      "summary": "dict keys=['component_matrix', 'reduced_data', 'top_features_per_component']",
+      "error": ""
+    },
+    {
+      "case_id": "test_stationarity.primary.adf",
+      "tool": "test_stationarity",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.005,
+      "summary": "dict keys=['method', 'statistic', 'p_value', 'stationary']",
+      "error": ""
+    },
+    {
+      "case_id": "test_stationarity.branch.kpss",
+      "tool": "test_stationarity",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.001,
+      "summary": "dict keys=['method', 'statistic', 'p_value', 'stationary']",
+      "error": ""
+    },
+    {
+      "case_id": "decompose_stl.primary",
+      "tool": "decompose_stl",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.002,
+      "summary": "dict keys=['method', 'model', 'trend_mean', 'trend_std', 'seasonal_mean', 'resid_var']",
+      "error": ""
+    },
+    {
+      "case_id": "auto_arima_modeling.primary",
+      "tool": "auto_arima_modeling",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 1.728,
+      "summary": "dict keys=['method', 'model', 'order', 'seasonal_order', 'aic', 'bic', 'aicc', 'coefficients']",
+      "error": ""
+    },
+    {
+      "case_id": "kaplan_meier_plot.primary",
+      "tool": "kaplan_meier_plot",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.012,
+      "summary": "dict keys=['A', 'B']",
+      "error": ""
+    },
+    {
+      "case_id": "logrank_test_compare.primary",
+      "tool": "logrank_test_compare",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.011,
+      "summary": "dict keys=['type', 'shape', 'columns', 'head']",
+      "error": ""
+    },
+    {
+      "case_id": "fit_cox_model.primary",
+      "tool": "fit_cox_model",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.043,
+      "summary": "dict keys=['method', 'model', 'coefficients', 'hazard_ratios', 'pvalues', 'ci95_lower', 'ci95_upper', 'model_info']",
+      "error": ""
+    },
+    {
+      "case_id": "ab_ttest.primary",
+      "tool": "ab_ttest",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.003,
+      "summary": "dict keys=['method', 'group_A_mean', 'group_B_mean', 't_statistic', 'p_value', 'conclusion']",
+      "error": ""
+    },
+    {
+      "case_id": "bootstrap_abtest.primary",
+      "tool": "bootstrap_abtest",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.118,
+      "summary": "dict keys=['method', 'observed_difference', 'ci_lower', 'ci_upper', 'significant', 'conclusion']",
+      "error": ""
+    },
+    {
+      "case_id": "ab_power_analysis.primary.proportion",
+      "tool": "ab_power_analysis",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.002,
+      "summary": "10",
+      "error": ""
+    },
+    {
+      "case_id": "ab_power_analysis.branch.mean",
+      "tool": "ab_power_analysis",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.001,
+      "summary": "199",
+      "error": ""
+    },
+    {
+      "case_id": "bayesian_inference.primary.binomial",
+      "tool": "bayesian_inference",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.0,
+      "summary": "dict keys=['posterior_mean', 'credible_interval', 'posterior_dist']",
+      "error": ""
+    },
+    {
+      "case_id": "bayesian_inference.branch.normal",
+      "tool": "bayesian_inference",
+      "kind": "branch",
+      "status": "PASS",
+      "duration_sec": 0.0,
+      "summary": "dict keys=['posterior_mean', 'credible_interval', 'posterior_dist']",
+      "error": ""
+    },
+    {
+      "case_id": "bayesian_linear_regression.primary",
+      "tool": "bayesian_linear_regression",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.004,
+      "summary": "dict keys=['method', 'model', 'posterior_mean', 'posterior_std', 'credible_interval', 'P(coef < 0)']",
+      "error": ""
+    },
+    {
+      "case_id": "fit_hierarchical_model.primary",
+      "tool": "fit_hierarchical_model",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 1.374,
+      "summary": "dict keys=['model', 'trace', 'summary']",
+      "error": ""
+    },
+    {
+      "case_id": "estimate_ATT_with_psm.primary",
+      "tool": "estimate_ATT_with_psm",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.014,
+      "summary": "dict keys=['ATT', 'n_matched', 'matched_data']",
+      "error": ""
+    },
+    {
+      "case_id": "estimate_did_effect.primary",
+      "tool": "estimate_did_effect",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.016,
+      "summary": "dict keys=['DID_coefficient', 'p_value', 'conf_int', 'model', 'placebo']",
+      "error": ""
+    },
+    {
+      "case_id": "synthetic_control.primary",
+      "tool": "synthetic_control",
+      "kind": "primary",
+      "status": "PASS",
+      "duration_sec": 0.013,
+      "summary": "dict keys=['time', 'treated', 'synthetic', 'treatment_effect', 'weights']",
+      "error": ""
+    }
+  ]
+}

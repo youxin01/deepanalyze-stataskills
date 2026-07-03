@@ -1,0 +1,50 @@
+{
+  "task": "growth",
+  "expected_tools": [
+    "read_csv",
+    "describe",
+    "check_missing_values",
+    "detect_outliers",
+    "correlation_analysis",
+    "contingency_test",
+    "ab_ttest",
+    "bootstrap_abtest",
+    "ab_power_analysis"
+  ],
+  "run_tool_calls": [
+    "ab_power_analysis",
+    "ab_ttest",
+    "bootstrap_abtest",
+    "check_missing_values",
+    "contingency_test",
+    "correlation_analysis",
+    "describe",
+    "detect_outliers",
+    "read_csv"
+  ],
+  "expected_tools_seen": [
+    "ab_power_analysis",
+    "ab_ttest",
+    "bootstrap_abtest",
+    "check_missing_values",
+    "contingency_test",
+    "correlation_analysis",
+    "describe",
+    "detect_outliers",
+    "read_csv"
+  ],
+  "unknown_tools": [],
+  "report_function_hits": [],
+  "forbidden_terms": [],
+  "failed_checks": [],
+  "warnings": [
+    "clean report does not spell out stataskills.run_tool function names"
+  ],
+  "passed": true,
+  "raw_chars": 16621,
+  "report_chars": 1353,
+  "downloaded_generated_files": [
+    "/nfsdata/zyx/statabench/StatABench/artifacts/reports/generated/growth/FACTS_FOR_REPORT.json",
+    "/nfsdata/zyx/statabench/StatABench/artifacts/reports/generated/growth/Conversation_Report_20260703_172545.md"
+  ]
+}

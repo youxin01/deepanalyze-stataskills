@@ -1,0 +1,13 @@
+{
+  "tasks": [
+    "hospital",
+    "growth",
+    "policy"
+  ],
+  "passed": {
+    "hospital": true,
+    "growth": true,
+    "policy": true
+  },
+  "report_dir": "/nfsdata/zyx/statabench/StatABench/artifacts/reports"
+}
