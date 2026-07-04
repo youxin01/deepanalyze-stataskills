@@ -1,353 +1,171 @@
 # DeepAnalyze-StatASkills
 
-DeepAnalyze-StatASkills integrates the statistical toolkit from **StatABench** into the **DeepAnalyze** data science agent framework.
+[DeepAnalyze](https://github.com/ruc-datalab/DeepAnalyze) with a bundled
+StatASkills statistical toolkit from
+[StatABench](https://github.com/youxin01/StatABench).
 
-It is built on the [DeepAnalyze paper](https://arxiv.org/abs/2510.16872) and the [StatABench paper](https://arxiv.org/abs/2606.22977).
+This project lets DeepAnalyze use a stable Python toolkit for common statistical
+work instead of re-implementing tests, regressions, A/B analysis, time-series
+methods, survival analysis, Bayesian analysis, and causal inference from
+scratch during code execution.
 
-The goal is to let DeepAnalyze call a stable statistical toolkit during code execution instead of repeatedly re-implementing statistical tests, regression models, time-series methods, survival analysis, A/B testing, and causal inference from scratch.
+- DeepAnalyze paper: [arXiv:2510.16872](https://arxiv.org/abs/2510.16872)
+- StatABench paper: [arXiv:2606.22977](https://arxiv.org/abs/2606.22977)
 
-```python
-from stataskills import run_tool, list_tools, tool_help
+## Highlights
 
-df = run_tool("read_csv", file="hospital_stay.csv")
-result = run_tool(
-    "multivariable_linear_regression",
-    data=df,
-    y_col="Length_of_Stay_days",
-    x_cols=["Patient_Age", "Severity_Score", "Is_Surgical"],
-)
-```
+- Supports both the OpenAI-compatible DeepAnalyze API and WebUI v2.
+- Provides `stataskills.run_tool(...)`, `list_tools()`, and `tool_help(...)`.
+- Covers 38 public statistical tools packaged from StatABench functions.
+- Includes reproducible prompts, datasets, raw model traces, reports, and
+  validation files.
+- Keeps the integration lightweight: no MCP protocol or new tool-calling
+  runtime is required.
 
 ## Repository Layout
 
 ```text
-DeepAnalyze/          # Upstream DeepAnalyze API and WebUI v2 source
-stataskills_demo/     # stataskills package, datasets, prompts, reports, and demo runner
+DeepAnalyze/          # DeepAnalyze API and WebUI v2 source
+stataskills_demo/     # stataskills package, datasets, examples, and reports
 docs/assets/          # README preview assets
 ```
 
-The integration is intentionally lightweight:
+Key integration files:
 
-- `DeepAnalyze/API` injects a stataskills instruction for API-based runs.
-- `DeepAnalyze/demo/chat_v2` injects the same toolkit instruction for WebUI v2 runs and makes local WebUI code execution able to import the bundled `stataskills` package.
+```text
+DeepAnalyze/API/utils.py
+DeepAnalyze/demo/chat_v2/backend_app/services/chat.py
+DeepAnalyze/demo/chat_v2/backend_app/services/execution.py
+```
 
-The bundled upstream `DeepAnalyze/README.md` is kept for attribution and reference, but some upstream demos mentioned there, such as `demo/cli`, are not included in this release package. The supported non-Web entrypoint in this repository is the OpenAI-compatible API under `DeepAnalyze/API`.
-
-## Integration Points
-
-This repository does not add an MCP client or a new tool-calling protocol to
-DeepAnalyze. The integration works by making `stataskills` importable inside the
-Python execution environment and appending a short toolkit instruction to the
-model task prompt.
-
-| Path | Purpose |
-|---|---|
-| `DeepAnalyze/API/utils.py` | Appends the stataskills instruction for OpenAI-compatible API runs. |
-| `DeepAnalyze/demo/chat_v2/backend_app/services/chat.py` | Appends the same instruction for WebUI v2 conversations. |
-| `DeepAnalyze/demo/chat_v2/backend_app/services/execution.py` | Adds `stataskills_demo/` to `PYTHONPATH` for local WebUI code execution. |
-| `stataskills_demo/examples/run_webui_stataskills_demo.py` | Validates the WebUI backend path without rewriting model output. |
-
-The injected prompt is appended after DeepAnalyze's normal `# Instruction` and
-optional `# Data` blocks. It tells the model to prefer:
+DeepAnalyze appends a short instruction after its normal `# Instruction` and
+`# Data` blocks telling the model to prefer:
 
 ```python
 from stataskills import run_tool, list_tools, tool_help
 ```
 
-It also tells the model to inspect unfamiliar tool signatures with
-`tool_help(...)`, avoid inventing tool names, and keep final numeric claims
-traceable to successful code output.
+For details, see
+[`stataskills_demo/docs/deepanalyze_stataskills_integration.md`](stataskills_demo/docs/deepanalyze_stataskills_integration.md).
 
-## StatASkills
-
-`stataskills` packages selected StatABench statistical functions as a Python toolkit for code-execution agents.
-
-Primary interfaces:
-
-```python
-from stataskills import run_tool, list_tools, tool_help
-```
-
-Covered capabilities include:
-
-- data loading, descriptive statistics, missing-value checks, and outlier detection
-- correlation analysis and hypothesis testing
-- linear regression, multivariable regression, GLM, and robust regression
-- time-series stationarity tests and STL decomposition
-- Kaplan-Meier, log-rank test, and Cox model
-- A/B testing, bootstrap confidence intervals, and power analysis
-- Bayesian analysis and causal inference, including DID, PSM, and synthetic control
-
-## Quick Start
-
-### 1. Install Dependencies
+## Installation
 
 ```bash
-cd DeepAnalyze
-pip install -r requirements.txt
+git clone git@github.com:youxin01/deepanalyze-stataskills.git
+cd deepanalyze-stataskills
 
-cd ../stataskills_demo
-pip install -e ".[full]"
+pip install -r DeepAnalyze/requirements.txt
+pip install -e "stataskills_demo[full]"
 ```
 
-### 2. Start the Model Service
-
-DeepAnalyze/API expects an OpenAI-compatible model endpoint at `http://localhost:8000/v1`.
+Install WebUI frontend dependencies if you want to use the browser interface:
 
 ```bash
-vllm serve RUC-DataLab/DeepAnalyze-8B \
+cd DeepAnalyze/demo/chat_v2/frontend
+npm install
+```
+
+## Start a Model Service
+
+DeepAnalyze expects an OpenAI-compatible model endpoint at
+`http://localhost:8000/v1`.
+
+Example with a local DeepAnalyze-8B checkpoint:
+
+```bash
+python -m vllm.entrypoints.openai.api_server \
+  --model /path/to/DeepAnalyze-8B \
+  --served-model-name DeepAnalyze-8B \
   --host 0.0.0.0 \
-  --port 8000
+  --port 8000 \
+  --max-model-len 16384 \
+  --trust-remote-code
 ```
 
-You can also replace `RUC-DataLab/DeepAnalyze-8B` with a local model path.
+You can also use another OpenAI-compatible provider through WebUI v2's
+`Custom Model` option.
 
-### 3. Start the DeepAnalyze API
-
-In another terminal:
+## Run DeepAnalyze API
 
 ```bash
 cd DeepAnalyze/API
 python start_server.py
 ```
 
-Default endpoints:
+Default services:
 
-- DeepAnalyze API: `http://localhost:8200`
-- File server: `http://localhost:8100`
-- Model endpoint expected by DeepAnalyze/API: `http://localhost:8000/v1`
+```text
+DeepAnalyze API: http://localhost:8200
+File server:     http://localhost:8100
+Model endpoint:  http://localhost:8000/v1
+```
 
-### 4. Start the WebUI v2
-
-The WebUI v2 backend and frontend are under `DeepAnalyze/demo/chat_v2`.
-
-Backend:
+## Run WebUI v2
 
 ```bash
 cd DeepAnalyze/demo/chat_v2
-DEEPANALYZE_BACKEND_PORT=8320 \
-DEEPANALYZE_FILE_SERVER_PORT=8321 \
-DEEPANALYZE_WORKSPACE_BASE=/tmp/deepanalyze-webui-stataskills-workspace \
-PYTHONPATH="$PWD" \
-python backend.py
+cp .env.example .env
+bash start.sh
 ```
 
-Frontend:
-
-```bash
-cd DeepAnalyze/demo/chat_v2/frontend
-NEXT_PUBLIC_BACKEND_URL=http://localhost:8320 \
-npm run dev -- -H 0.0.0.0 -p 8330
-```
-
-Open:
+Open the browser UI:
 
 ```text
-http://localhost:8330
+http://localhost:4000
 ```
 
-In the WebUI, choose `Model Provider = Local` when a DeepAnalyze-compatible
-model is running at `http://localhost:8000/v1`. Choose `Custom Model` for any
-OpenAI-compatible API provider and fill in the model name, API base, and API key
-in the left panel.
+In the left panel:
 
-If the bundled Next.js native SWC package crashes on your machine with
-`Bus error`, the frontend can be run with Next's WASM SWC fallback:
+- choose `Local` if your model is running at `http://localhost:8000/v1`;
+- choose `Custom Model` for another OpenAI-compatible API provider.
 
-```bash
-cd DeepAnalyze/demo/chat_v2/frontend
-npm install
-npm install --no-save @next/swc-wasm-nodejs@16.1.6
-NEXT_PUBLIC_BACKEND_URL=http://localhost:8320 \
-NEXT_TEST_WASM=1 \
-NEXT_TEST_WASM_DIR="$PWD/node_modules/@next/swc-wasm-nodejs" \
-npx -y node@22.12.0 node_modules/next/dist/bin/next dev --webpack -H 0.0.0.0 -p 8330
-```
+## Run Examples
 
-### 5. Ask Questions Without the WebUI
+The repository includes three reproducible tasks:
 
-You do not need the WebUI or a CLI. Send requests directly to the local DeepAnalyze API.
+| Task | Scenario | Main statistical use |
+|---|---|---|
+| `growth` | Product A/B experiment | A/B tests and data quality checks |
+| `hospital` | Hospital operations | correlation and regression analysis |
+| `policy` | Policy effect evaluation | DID-style causal analysis |
 
-Simple chat:
-
-```bash
-curl -X POST http://localhost:8200/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "DeepAnalyze-8B",
-    "messages": [
-      {"role": "user", "content": "请用一句话介绍这个系统能做什么。"}
-    ],
-    "temperature": 0.2
-  }'
-```
-
-Python example with multiple uploaded files:
-
-```python
-from pathlib import Path
-import requests
-
-api = "http://localhost:8200"
-csv_paths = [
-    Path("stataskills_demo/data/datasets83/conversion_data.csv"),
-    Path("stataskills_demo/data/datasets83/website_session_data.csv"),
-]
-
-file_ids = []
-for csv_path in csv_paths:
-    with csv_path.open("rb") as handle:
-        file_resp = requests.post(
-            f"{api}/v1/files",
-            files={"file": (csv_path.name, handle, "text/csv")},
-            data={"purpose": "file-extract"},
-            timeout=120,
-        )
-    file_resp.raise_for_status()
-    file_ids.append(file_resp.json()["id"])
-
-chat_resp = requests.post(
-    f"{api}/v1/chat/completions",
-    json={
-        "model": "DeepAnalyze-8B",
-        "messages": [
-            {
-                "role": "user",
-                "content": (
-                    "我上传了 conversion_data.csv 和 website_session_data.csv。"
-                    "请帮我判断 B 组是否值得继续放量，并用中文给出简短结论。"
-                ),
-            }
-        ],
-        "file_ids": file_ids,
-        "temperature": 0.2,
-    },
-    timeout=900,
-)
-chat_resp.raise_for_status()
-print(chat_resp.json()["choices"][0]["message"]["content"])
-```
-
-The same API also supports file IDs inside a message:
-
-```python
-chat_resp = requests.post(
-    f"{api}/v1/chat/completions",
-    json={
-        "model": "DeepAnalyze-8B",
-        "messages": [
-            {
-                "role": "user",
-                "content": "请同时参考这两个 CSV，分析 A/B 实验结果。",
-                "file_ids": file_ids,
-            }
-        ],
-        "temperature": 0.2,
-    },
-    timeout=900,
-)
-```
-
-## Reproduce the Three Reports
-
-The three reports in this repository were generated without the WebUI. The runner:
-
-1. uploads the task CSV files to `http://localhost:8200/v1/files`;
-2. sends the natural-language task prompt to `http://localhost:8200/v1/chat/completions`;
-3. saves the raw model trace, original response JSON, extracted final report, and validation JSON;
-4. does not rewrite, polish, or synthesize the final reports.
-
-Run all examples:
+Run one task:
 
 ```bash
 cd stataskills_demo
-python examples/run_deepanalyze_demo_tasks.py --task all
-```
-
-Run one example:
-
-```bash
 python examples/run_deepanalyze_demo_tasks.py --task growth
 ```
 
-Generated reports are saved under:
+Run all tasks:
+
+```bash
+python examples/run_deepanalyze_demo_tasks.py --task all
+```
+
+Reports and raw traces are saved under:
 
 ```text
 stataskills_demo/artifacts/reports/
 ```
 
-Current demo files:
-
-```text
-stataskills_demo/examples/deepanalyze_hospital_task.md
-stataskills_demo/examples/deepanalyze_growth_task.md
-stataskills_demo/examples/deepanalyze_policy_task.md
-stataskills_demo/examples/run_deepanalyze_demo_tasks.py
-```
-
-To validate the WebUI v2 backend path, start `DeepAnalyze/demo/chat_v2` and run:
+Validate the WebUI backend path:
 
 ```bash
-cd stataskills_demo
-PYTHONPATH="$PWD" python examples/run_webui_stataskills_demo.py \
-  --api-base http://localhost:8320 \
-  --provider local \
-  --model DeepAnalyze-8B \
-  --task growth
+python examples/run_webui_stataskills_demo.py --task growth
 ```
 
-For a custom OpenAI-compatible provider, pass the provider settings explicitly:
+## Featured Example
 
-```bash
-python examples/run_webui_stataskills_demo.py \
-  --provider custom \
-  --model your-model-name \
-  --custom-api-base https://your-api.example/v1
-```
+Prompt:
 
-WebUI validation artifacts are saved under:
-
-```text
-stataskills_demo/artifacts/webui/
-```
-
-That directory is ignored by git because it contains local streaming traces and
-provider diagnostics.
-
-## Examples
-
-This repository includes three reproducible examples:
-
-| Task | Scenario | Observed stataskills usage |
-|---|---|---|
-| `hospital` | Hospital operations and ER pressure | regression/correlation-style analysis |
-| `growth` | Product growth and conversion experiment | A/B-style tests and data quality checks |
-| `policy` | Policy effect evaluation | regression/DID-style analysis on policy panel data |
-
-Each example includes:
-
-- a natural-language prompt
-- the required CSV datasets
-- the original DeepAnalyze report
-- raw model output and validation files
-
-The prompts are intentionally short and human-like. They do not include required code blocks or a tool checklist. Validation only checks that DeepAnalyze really called `stataskills.run_tool(...)` at least once and produced a non-empty report; warnings preserve model trial-and-error such as attempted unknown tool names.
-
-### Featured Example: A/B Experiment
-
-**Prompt**
-
-> 我上传了 `conversion_data.csv` 和 `website_session_data.csv`。
+> I uploaded `conversion_data.csv` and `website_session_data.csv`.
 >
-> 我们最近做了一个 A/B 实验，想知道 B 组是否值得继续放量。请帮我看转化率和用户参与度有没有明显差异，并给出下一步建议。
->
-> 如果系统里有现成的统计分析工具，请直接用它们来判断差异，不用自己手写检验。
->
-> 请用中文回答，结论别说得过度绝对。
+> We recently ran an A/B experiment and want to know whether group B is worth
+> rolling out further. Please check whether conversion and engagement differ
+> noticeably, and give a next-step recommendation.
 
-**Report preview**
-
-The preview below is rendered directly from the unedited DeepAnalyze Markdown report.
+The preview below is rendered directly from the unedited DeepAnalyze Markdown
+report.
 
 ![A/B experiment report preview](docs/assets/growth-report-preview.png)
 
@@ -358,7 +176,7 @@ Open the full example:
 - Raw model trace: [`growth_raw.md`](stataskills_demo/artifacts/reports/growth_raw.md)
 - Validation: [`growth_validation.json`](stataskills_demo/artifacts/reports/growth_validation.json)
 
-## Validate the Toolkit
+## Validate StatASkills
 
 ```bash
 cd stataskills_demo
@@ -374,41 +192,23 @@ Failed: 0
 Public tools covered by primary PASS: 38 / 38
 ```
 
-## WebUI
+## Related Projects
 
-The upstream DeepAnalyze WebUI v2 source is included under
-`DeepAnalyze/demo/chat_v2`. This integration modifies only the WebUI backend
-path:
-
-- the chat backend appends the stataskills instruction to each user task;
-- local code execution can import the bundled `stataskills` package;
-- custom-provider HTTP errors are streamed back as a sanitized `<Answer>` rather
-  than failing as an opaque dropped connection.
-
-The three committed reports above were generated through the API runner, not
-through the WebUI. WebUI validation outputs are kept under
-`stataskills_demo/artifacts/webui/` locally and ignored by git because they are
-runtime traces.
-
-## Related Projects and Papers
-
-This project builds on:
-
-- **DeepAnalyze** by RUC-DataLab
+- DeepAnalyze
   - Code: [https://github.com/ruc-datalab/DeepAnalyze](https://github.com/ruc-datalab/DeepAnalyze)
   - Paper: [https://arxiv.org/abs/2510.16872](https://arxiv.org/abs/2510.16872)
-- **StatABench**
+- StatABench
   - Code: [https://github.com/youxin01/StatABench](https://github.com/youxin01/StatABench)
   - Paper: [https://arxiv.org/abs/2606.22977](https://arxiv.org/abs/2606.22977)
 
-This repository extracts and packages the statistical toolkit from StatABench and integrates it into the DeepAnalyze framework for reproducible agentic statistical analysis.
-
 ## License
 
-DeepAnalyze is released under the MIT License. StatABench is released under GPLv3. Because this repository includes and adapts StatABench toolkit code, the root license of this integrated repository is GPLv3.
+DeepAnalyze is released under the MIT License. StatABench is released under
+GPLv3. Because this repository includes and adapts StatABench toolkit code, this
+integrated repository is released under GPLv3.
 
 See:
 
-- `LICENSE`
-- `THIRD_PARTY_LICENSES/DeepAnalyze-MIT-LICENSE`
-- `THIRD_PARTY_LICENSES/StatABench-GPLv3-LICENSE`
+- [`LICENSE`](LICENSE)
+- [`THIRD_PARTY_LICENSES/DeepAnalyze-MIT-LICENSE`](THIRD_PARTY_LICENSES/DeepAnalyze-MIT-LICENSE)
+- [`THIRD_PARTY_LICENSES/StatABench-GPLv3-LICENSE`](THIRD_PARTY_LICENSES/StatABench-GPLv3-LICENSE)
