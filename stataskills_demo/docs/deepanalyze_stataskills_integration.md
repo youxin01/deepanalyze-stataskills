@@ -284,16 +284,17 @@ curl http://localhost:8000/v1/models
   /nfsdata/zyx/statabench/StatABench/examples/run_deepanalyze_demo_tasks.py --task policy
 ```
 
-## 8. 旧脚本和旧 showcase
+## 8. 已清理的旧脚本
 
-旧的 showcase 文件仍然保留：
+release 包中已经移除了旧 showcase 文件：
 
 ```text
-/nfsdata/zyx/statabench/StatABench/examples/deepanalyze_showcase_task.md
-/nfsdata/zyx/statabench/StatABench/examples/deepanalyze_showcase_driver.py
-/nfsdata/zyx/statabench/StatABench/examples/run_deepanalyze_showcase_report.py
+stataskills_demo/examples/deepanalyze_showcase_task.md
+stataskills_demo/examples/deepanalyze_showcase_driver.py
+stataskills_demo/examples/run_deepanalyze_showcase_report.py
+stataskills_demo/examples/deepanalyze_stataskills_smoke.py
 ```
 
 旧的医院专用 runner 已从 release 包中移除。这个脚本会基于抽取出的 facts 再发起报告改写请求，容易让人误解展示报告不是原始模型输出。
 
-这些旧 showcase 更像工程调试或早期单任务实验，不建议作为主要展示报告。主要展示建议使用统一 runner 产出的三个短文件名原始报告。
+这些旧脚本更像工程调试或早期单任务实验，不适合作为主要展示材料。主要展示只使用统一 runner 产出的三个短文件名原始报告。
