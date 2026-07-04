@@ -112,6 +112,31 @@ Each example includes:
 
 The prompts are intentionally short and human-like. They do not include required code blocks or a tool checklist. Validation only checks that DeepAnalyze really called `stataskills.run_tool(...)` at least once and produced a non-empty report; warnings preserve model trial-and-error such as attempted unknown tool names.
 
+### Featured Example: A/B Experiment
+
+**Prompt**
+
+> 我上传了 `conversion_data.csv` 和 `website_session_data.csv`。
+>
+> 我们最近做了一个 A/B 实验，想知道 B 组是否值得继续放量。请帮我看转化率和用户参与度有没有明显差异，并给出下一步建议。
+>
+> 如果系统里有现成的统计分析工具，请直接用它们来判断差异，不用自己手写检验。
+>
+> 请用中文回答，结论别说得过度绝对。
+
+**Report preview**
+
+![A/B experiment report preview](docs/assets/growth-report-preview.svg)
+
+DeepAnalyze produced the report from the short prompt above and the uploaded CSV files. The raw trace shows actual `stataskills.run_tool(...)` calls, including `read_csv`, `check_missing_values`, and A/B-style testing helpers.
+
+Open the full example:
+
+- Prompt: [`deepanalyze_growth_task.md`](stataskills_demo/examples/deepanalyze_growth_task.md)
+- Report: [`growth.md`](stataskills_demo/artifacts/reports/growth.md)
+- Raw model trace: [`growth_raw.md`](stataskills_demo/artifacts/reports/growth_raw.md)
+- Validation: [`growth_validation.json`](stataskills_demo/artifacts/reports/growth_validation.json)
+
 ## Validate the Toolkit
 
 ```bash
