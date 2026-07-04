@@ -155,14 +155,18 @@ Failed: 0
 Public tools covered by primary PASS: 38 / 38
 ```
 
-## Acknowledgements
+## Related Projects and Papers
 
 This project builds on:
 
-- **DeepAnalyze** by RUC-DataLab: https://github.com/ruc-datalab/DeepAnalyze
-- **StatABench**: https://github.com/youxin01/StatABench
+- **DeepAnalyze** by RUC-DataLab
+  - Code: https://github.com/ruc-datalab/DeepAnalyze
+  - Paper: https://arxiv.org/abs/2510.16872
+- **StatABench**
+  - Code: https://github.com/youxin01/StatABench
+  - Paper: https://arxiv.org/abs/2606.22977
 
-We thank the authors of both projects. This repository extracts and packages the statistical toolkit from StatABench and integrates it into the DeepAnalyze framework for reproducible agentic statistical analysis.
+This repository extracts and packages the statistical toolkit from StatABench and integrates it into the DeepAnalyze framework for reproducible agentic statistical analysis.
 
 ## License
 
