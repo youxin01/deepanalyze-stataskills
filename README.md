@@ -33,6 +33,31 @@ The integration is intentionally lightweight:
 
 The bundled upstream `DeepAnalyze/README.md` is kept for attribution and reference, but some upstream demos mentioned there, such as `demo/cli`, are not included in this release package. The supported non-Web entrypoint in this repository is the OpenAI-compatible API under `DeepAnalyze/API`.
 
+## Integration Points
+
+This repository does not add an MCP client or a new tool-calling protocol to
+DeepAnalyze. The integration works by making `stataskills` importable inside the
+Python execution environment and appending a short toolkit instruction to the
+model task prompt.
+
+| Path | Purpose |
+|---|---|
+| `DeepAnalyze/API/utils.py` | Appends the stataskills instruction for OpenAI-compatible API runs. |
+| `DeepAnalyze/demo/chat_v2/backend_app/services/chat.py` | Appends the same instruction for WebUI v2 conversations. |
+| `DeepAnalyze/demo/chat_v2/backend_app/services/execution.py` | Adds `stataskills_demo/` to `PYTHONPATH` for local WebUI code execution. |
+| `stataskills_demo/examples/run_webui_stataskills_demo.py` | Validates the WebUI backend path without rewriting model output. |
+
+The injected prompt is appended after DeepAnalyze's normal `# Instruction` and
+optional `# Data` blocks. It tells the model to prefer:
+
+```python
+from stataskills import run_tool, list_tools, tool_help
+```
+
+It also tells the model to inspect unfamiliar tool signatures with
+`tool_help(...)`, avoid inventing tool names, and keep final numeric claims
+traceable to successful code output.
+
 ## StatASkills
 
 `stataskills` packages selected StatABench statistical functions as a Python toolkit for code-execution agents.
@@ -92,7 +117,54 @@ Default endpoints:
 - File server: `http://localhost:8100`
 - Model endpoint expected by DeepAnalyze/API: `http://localhost:8000/v1`
 
-### 4. Ask Questions Without the WebUI
+### 4. Start the WebUI v2
+
+The WebUI v2 backend and frontend are under `DeepAnalyze/demo/chat_v2`.
+
+Backend:
+
+```bash
+cd DeepAnalyze/demo/chat_v2
+DEEPANALYZE_BACKEND_PORT=8320 \
+DEEPANALYZE_FILE_SERVER_PORT=8321 \
+DEEPANALYZE_WORKSPACE_BASE=/tmp/deepanalyze-webui-stataskills-workspace \
+PYTHONPATH="$PWD" \
+python backend.py
+```
+
+Frontend:
+
+```bash
+cd DeepAnalyze/demo/chat_v2/frontend
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8320 \
+npm run dev -- -H 0.0.0.0 -p 8330
+```
+
+Open:
+
+```text
+http://localhost:8330
+```
+
+In the WebUI, choose `Model Provider = Local` when a DeepAnalyze-compatible
+model is running at `http://localhost:8000/v1`. Choose `Custom Model` for any
+OpenAI-compatible API provider and fill in the model name, API base, and API key
+in the left panel.
+
+If the bundled Next.js native SWC package crashes on your machine with
+`Bus error`, the frontend can be run with Next's WASM SWC fallback:
+
+```bash
+cd DeepAnalyze/demo/chat_v2/frontend
+npm install
+npm install --no-save @next/swc-wasm-nodejs@16.1.6
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8320 \
+NEXT_TEST_WASM=1 \
+NEXT_TEST_WASM_DIR="$PWD/node_modules/@next/swc-wasm-nodejs" \
+npx -y node@22.12.0 node_modules/next/dist/bin/next dev --webpack -H 0.0.0.0 -p 8330
+```
+
+### 5. Ask Questions Without the WebUI
 
 You do not need the WebUI or a CLI. Send requests directly to the local DeepAnalyze API.
 
@@ -217,7 +289,11 @@ To validate the WebUI v2 backend path, start `DeepAnalyze/demo/chat_v2` and run:
 
 ```bash
 cd stataskills_demo
-python examples/run_webui_stataskills_demo.py --task growth
+PYTHONPATH="$PWD" python examples/run_webui_stataskills_demo.py \
+  --api-base http://localhost:8320 \
+  --provider local \
+  --model DeepAnalyze-8B \
+  --task growth
 ```
 
 For a custom OpenAI-compatible provider, pass the provider settings explicitly:
@@ -300,7 +376,19 @@ Public tools covered by primary PASS: 38 / 38
 
 ## WebUI
 
-The upstream DeepAnalyze WebUI v2 source is included under `DeepAnalyze/demo/chat_v2` and was not modified for this integration. The three reports above were generated through the API runner, not through the WebUI.
+The upstream DeepAnalyze WebUI v2 source is included under
+`DeepAnalyze/demo/chat_v2`. This integration modifies only the WebUI backend
+path:
+
+- the chat backend appends the stataskills instruction to each user task;
+- local code execution can import the bundled `stataskills` package;
+- custom-provider HTTP errors are streamed back as a sanitized `<Answer>` rather
+  than failing as an opaque dropped connection.
+
+The three committed reports above were generated through the API runner, not
+through the WebUI. WebUI validation outputs are kept under
+`stataskills_demo/artifacts/webui/` locally and ignored by git because they are
+runtime traces.
 
 ## Related Projects and Papers
 
