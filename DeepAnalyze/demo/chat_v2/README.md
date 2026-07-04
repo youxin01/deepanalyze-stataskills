@@ -14,6 +14,7 @@
 - Switch between Chinese and English UI
 - Run code either locally or inside Docker
 - Choose model provider: Local, HeyWhale API, or Custom OpenAI-compatible API
+- Prefer the bundled `stataskills` toolkit for statistical analysis code
 
 ## Model Provider Settings
 
@@ -29,6 +30,27 @@ When provider is `Custom Model`, the frontend automatically prepends a structure
 - Chinese UI => Chinese prefix
 
 For local or HeyWhale DeepAnalyze usage, this extra prefix is not injected.
+
+## StatASkills Integration
+
+The backend appends a stataskills instruction to every user task after the
+`# Instruction` and `# Data` blocks. For statistical work, the model is told to
+prefer:
+
+```python
+from stataskills import run_tool, list_tools, tool_help
+```
+
+Local execution automatically adds the repository's `stataskills_demo/` folder
+to `PYTHONPATH`, so generated Python code can import `stataskills` even when the
+package is not installed globally. Docker execution still requires the Docker
+image or container environment to include the same package and optional
+statistical dependencies.
+
+The custom provider path keeps the frontend's structured system prompt and uses
+the backend stataskills instruction as an additional task hint. If an upstream
+custom provider returns an HTTP error, the backend streams a short `<Answer>`
+with the sanitized upstream error instead of silently dropping the connection.
 
 ## Prerequisites
 

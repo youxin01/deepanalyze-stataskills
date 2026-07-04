@@ -26,7 +26,10 @@ stataskills_demo/     # stataskills package, datasets, prompts, reports, and dem
 docs/assets/          # README preview assets
 ```
 
-Only one DeepAnalyze framework file is changed for this integration: `DeepAnalyze/API/utils.py`. It injects an instruction telling the model to prefer `stataskills.run_tool(...)` for statistical work.
+The integration is intentionally lightweight:
+
+- `DeepAnalyze/API` injects a stataskills instruction for API-based runs.
+- `DeepAnalyze/demo/chat_v2` injects the same toolkit instruction for WebUI v2 runs and makes local WebUI code execution able to import the bundled `stataskills` package.
 
 The bundled upstream `DeepAnalyze/README.md` is kept for attribution and reference, but some upstream demos mentioned there, such as `demo/cli`, are not included in this release package. The supported non-Web entrypoint in this repository is the OpenAI-compatible API under `DeepAnalyze/API`.
 
@@ -209,6 +212,31 @@ stataskills_demo/examples/deepanalyze_growth_task.md
 stataskills_demo/examples/deepanalyze_policy_task.md
 stataskills_demo/examples/run_deepanalyze_demo_tasks.py
 ```
+
+To validate the WebUI v2 backend path, start `DeepAnalyze/demo/chat_v2` and run:
+
+```bash
+cd stataskills_demo
+python examples/run_webui_stataskills_demo.py --task growth
+```
+
+For a custom OpenAI-compatible provider, pass the provider settings explicitly:
+
+```bash
+python examples/run_webui_stataskills_demo.py \
+  --provider custom \
+  --model your-model-name \
+  --custom-api-base https://your-api.example/v1
+```
+
+WebUI validation artifacts are saved under:
+
+```text
+stataskills_demo/artifacts/webui/
+```
+
+That directory is ignored by git because it contains local streaming traces and
+provider diagnostics.
 
 ## Examples
 

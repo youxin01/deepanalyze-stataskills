@@ -39,10 +39,38 @@ HEYWHALE_BACKUP_CHAT_COMPLETIONS_URL = (
 REMOTE_STOP_SEQUENCES = ["</Code>", "</Answer>"]
 EXECUTE_RESULT_PREFIX = "# Execute Result\n"
 FIXED_MODEL_NAME = "DeepAnalyze-8B"
+MAX_UPSTREAM_ERROR_CHARS = 2000
 STRUCTURED_TAG_NAMES = ("Analyze", "Understand", "Code", "Execute", "Answer", "File")
 STRUCTURED_OPEN_TAGS = tuple(f"<{tag}>" for tag in STRUCTURED_TAG_NAMES)
 STRUCTURED_TAG_PATTERN = "|".join(STRUCTURED_TAG_NAMES)
 STRUCTURED_OPEN_TAG_RE = re.compile(rf"<({STRUCTURED_TAG_PATTERN})>")
+STATASKILLS_PROMPT_MARKER = "# Available Statistical Toolkit"
+STATASKILLS_PROMPT = """# Available Statistical Toolkit
+
+The Python package `stataskills` is installed in the code execution environment.
+For statistical work such as EDA, missingness and outlier checks, hypothesis
+tests, correlation, regression/GLM, time series, survival analysis, A/B testing,
+Bayesian inference, causal inference, and multiple-testing correction, prefer:
+
+```python
+from stataskills import run_tool, list_tools, tool_help
+print(list_tools())  # inspect available tools when needed
+result = run_tool("check_missing_values", data="data.csv")
+print(result)
+```
+
+Most tools accept `data="file.csv"` directly. If a DataFrame is needed for
+inspection, use `df = run_tool("read_csv", file="data.csv")`.
+Common aliases such as `linear_regression` for `simple_linear_regression` and
+`x`/`y` for `x_col`/`y_col` are supported, but use `tool_help("tool_name")` for
+exact signatures before calling unfamiliar tools.
+
+Do not invent tool names. If `list_tools()` and `tool_help()` do not show a
+requested method, choose the nearest available `stataskills` tool or clearly
+state that the method was not run. In the final answer, every numeric claim,
+p-value, coefficient, percentage, or recommendation must be traceable to
+successful code output.
+"""
 
 
 @dataclass(frozen=True)
@@ -288,7 +316,7 @@ def _iter_heywhale_stream(
                     },
                     json=request_body,
                 ) as response:
-                    response.raise_for_status()
+                    _raise_for_status_with_body(runtime_config.provider, response)
                     for raw_line in response.iter_lines():
                         if not raw_line:
                             continue
@@ -338,7 +366,7 @@ def _iter_custom_stream(
             headers=headers,
             json=request_body,
         ) as response:
-            response.raise_for_status()
+            _raise_for_status_with_body(runtime_config.provider, response)
             for raw_line in response.iter_lines():
                 if not raw_line:
                     continue
@@ -357,6 +385,34 @@ def _iter_custom_stream(
                 delta = (choice.get("delta") or {}).get("content")
                 finish_reason = choice.get("finish_reason")
                 yield delta, {"choices": [{"finish_reason": finish_reason}]}
+
+
+def _raise_for_status_with_body(provider: str, response: httpx.Response) -> None:
+    if response.status_code < 400:
+        return
+
+    body = ""
+    try:
+        response.read()
+        body = response.text.strip()
+    except Exception:
+        body = ""
+
+    if len(body) > MAX_UPSTREAM_ERROR_CHARS:
+        body = body[:MAX_UPSTREAM_ERROR_CHARS] + "...[truncated]"
+
+    message = f"{provider or 'model'} request failed with HTTP {response.status_code}"
+    if body:
+        message = f"{message}: {body}"
+    raise httpx.HTTPStatusError(message, request=response.request, response=response)
+
+
+def _sanitize_provider_error(message: str, runtime_config: ChatRuntimeConfig) -> str:
+    sanitized = str(message or "")
+    if runtime_config.api_key:
+        sanitized = sanitized.replace(runtime_config.api_key, "***")
+    sanitized = re.sub(r"Bearer\s+[A-Za-z0-9._~+/=-]+", "Bearer ***", sanitized)
+    return sanitized
 
 
 def _resolve_workspace_selection(
@@ -382,9 +438,12 @@ def _build_user_prompt(messages: list[dict[str, Any]], workspace: list[str], wor
     selected_paths = _resolve_workspace_selection(workspace, workspace_dir)
     file_info = collect_file_info(selected_paths if selected_paths else workspace_dir)
     if file_info:
-        messages[-1]["content"] = f"# Instruction\n{user_message}\n\n# Data\n{file_info}"
+        prompt = f"# Instruction\n{user_message}\n\n# Data\n{file_info}"
     else:
-        messages[-1]["content"] = f"# Instruction\n{user_message}"
+        prompt = f"# Instruction\n{user_message}"
+    if STATASKILLS_PROMPT_MARKER not in prompt:
+        prompt = f"{prompt}\n\n{STATASKILLS_PROMPT}"
+    messages[-1]["content"] = prompt
 
 
 def _extract_code_to_execute(content: str) -> str | None:
@@ -516,7 +575,18 @@ def bot_stream(
                         finished = True
                         break
             except httpx.HTTPError as exc:
-                raise RuntimeError(f"HeyWhale request failed: {exc}") from exc
+                error = _sanitize_provider_error(str(exc), runtime_config)
+                provider = runtime_config.provider or "model"
+                error_answer = (
+                    "\n<Answer>\n"
+                    f"{provider} 模型请求失败，WebUI 后端已停止本轮执行。\n\n"
+                    f"错误信息：{error}\n"
+                    "</Answer>\n"
+                )
+                cur_res += error_answer
+                yield error_answer
+                finished = True
+                break
 
             if stop_event.is_set():
                 break

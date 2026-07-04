@@ -17,6 +17,7 @@ workspace/
 workspaces/
 logs/
 *.log
+stataskills_demo/artifacts/webui/
 
 # Secrets / local config
 .env

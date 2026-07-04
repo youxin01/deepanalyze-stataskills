@@ -13,6 +13,19 @@
 - 支持导出 Markdown 和 PDF 报告
 - 支持中英文界面切换
 - 支持 local / docker 两种代码执行模式
+- 统计分析代码会优先提示模型使用内置 `stataskills` 工具库
+
+## StatASkills 接入
+
+后端会在每次用户任务的 `# Instruction` 和 `# Data` 后追加 stataskills 使用说明。涉及统计分析时，模型会被提示优先使用：
+
+```python
+from stataskills import run_tool, list_tools, tool_help
+```
+
+local 执行模式会自动把仓库里的 `stataskills_demo/` 加入 `PYTHONPATH`，因此生成的 Python 代码可以直接 `import stataskills`，不要求全局安装。Docker 执行模式仍需要镜像或容器环境中包含同一个包及相应统计依赖。
+
+Custom Model 路径仍保留前端原本的结构化 system prompt，stataskills 说明由后端作为任务提示补充。若上游 custom provider 返回 HTTP 错误，后端会流式返回一段脱敏后的错误 `<Answer>`，而不是让连接直接断掉。
 
 ## 运行前准备
 

@@ -12,6 +12,20 @@ from .workspace import build_download_url, register_generated_paths, uniquify_pa
 from ..settings import IMAGE_EXTENSIONS, settings
 
 
+REPO_ROOT = Path(__file__).resolve().parents[5]
+STATASKILLS_DEMO_DIR = REPO_ROOT / "stataskills_demo"
+
+
+def _prepend_pythonpath(env: dict[str, str], path: Path) -> None:
+    if not path.exists():
+        return
+    existing = env.get("PYTHONPATH", "")
+    values = [str(path)]
+    if existing:
+        values.append(existing)
+    env["PYTHONPATH"] = os.pathsep.join(values)
+
+
 def execute_code_safe(
     code_str: str,
     workspace_dir: str,
@@ -36,6 +50,7 @@ def execute_code_safe(
         child_env = os.environ.copy()
         child_env.setdefault("MPLBACKEND", "Agg")
         child_env.setdefault("QT_QPA_PLATFORM", "offscreen")
+        _prepend_pythonpath(child_env, STATASKILLS_DEMO_DIR)
         child_env.pop("DISPLAY", None)
 
         completed = subprocess.run(

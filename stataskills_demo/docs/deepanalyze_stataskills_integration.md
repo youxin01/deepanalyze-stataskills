@@ -95,7 +95,7 @@ conda run -n deepanalyze_app pip install -e '/nfsdata/zyx/statabench/StatABench[
 
 ## 3. DeepAnalyze 侧改动
 
-DeepAnalyze 只改了一个核心文件：
+原始 OpenAI-compatible API 路径改了一个核心文件：
 
 ```text
 /nfsdata/zyx/statabench/skills-create/DeepAnalyze/API/utils.py
@@ -115,6 +115,20 @@ DeepAnalyze 只改了一个核心文件：
 - 最终报告里的数值、p 值、HR、百分比和建议必须能追溯到成功执行的代码输出。
 
 因此 DeepAnalyze 框架本身没有新增工具协议，也没有新增 MCP client。它只是通过“执行环境可 import + prompt 注入”兼容 `stataskills`。
+
+WebUI v2 路径也已经接入：
+
+```text
+DeepAnalyze/demo/chat_v2/backend_app/services/chat.py
+DeepAnalyze/demo/chat_v2/backend_app/services/execution.py
+```
+
+改动内容：
+
+- WebUI 后端在 `# Instruction` / `# Data` 后追加同一类 `stataskills` 使用说明。
+- local 执行模式会把 release 仓库里的 `stataskills_demo/` 加到代码执行子进程的 `PYTHONPATH`。
+- Custom Model 仍沿用 WebUI v2 原来的结构化 system prompt；stataskills 说明由后端补充，前端不需要知道 toolkit 细节。
+- Custom/HeyWhale 上游返回 HTTP 错误时，后端会把脱敏后的错误信息包装成一段 `<Answer>` 流式返回，避免前端只表现为连接断开。
 
 ## 4. 工程验证：全部公开函数可调用
 
@@ -283,6 +297,43 @@ curl http://localhost:8000/v1/models
 /data1/zyx/conda/envs/deepanalyze_app/bin/python \
   /nfsdata/zyx/statabench/StatABench/examples/run_deepanalyze_demo_tasks.py --task policy
 ```
+
+验证 WebUI v2 后端路径：
+
+```bash
+cd /nfsdata/zyx/statabench/skills-create/deepanalyze-stataskills-release/stataskills_demo
+PYTHONPATH=/nfsdata/zyx/statabench/skills-create/deepanalyze-stataskills-release/stataskills_demo \
+/data1/zyx/conda/envs/deepanalyze_app/bin/python \
+  examples/run_webui_stataskills_demo.py --task growth
+```
+
+验证 custom provider 路径：
+
+```bash
+PYTHONPATH=/nfsdata/zyx/statabench/skills-create/deepanalyze-stataskills-release/stataskills_demo \
+/data1/zyx/conda/envs/deepanalyze_app/bin/python \
+  examples/run_webui_stataskills_demo.py \
+  --provider custom \
+  --model your-model-name \
+  --custom-api-base https://your-api.example/v1 \
+  --task growth
+```
+
+WebUI 验证输出会写到：
+
+```text
+stataskills_demo/artifacts/webui/
+```
+
+这个目录已加入 `.gitignore`，用于保存本地流式 traces、原始 answer 和 provider 诊断，不作为 release 固定展示报告提交。
+
+本次 WebUI v2 验证结果：
+
+- `/execute` 可以在 WebUI local 执行子进程中直接 `from stataskills import list_tools`，返回 38 个工具。
+- `run_webui_stataskills_demo.py --provider local --task growth` 通过，流式输出中包含 `<Code>`、`<Execute>`、`<Answer>`，并检测到 `run_tool("check_missing_values")`、`run_tool("ab_ttest")`、`run_tool("contingency_test")`。
+- `--provider custom` 路径用 OpenAI-compatible mock server 验证通过，证明 custom provider 分支也能完成 stataskills 调用闭环。
+- custom provider 上游 HTTP 错误会被包装成脱敏 `<Answer>` 返回，验证时不会再表现为静默断流。
+- WebUI 前端未做业务改动；页面 HTTP 200，三栏界面可渲染。当前机器上的 Next native SWC binary 会在 `next build` 时触发 `Bus error`，因此前端构建验证使用了 `NEXT_TEST_WASM=1` 和 `NEXT_TEST_WASM_DIR=.../node_modules/@next/swc-wasm-nodejs` 的 WASM SWC 路径，构建通过。
 
 ## 8. 已清理的旧脚本
 
