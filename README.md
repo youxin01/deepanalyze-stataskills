@@ -126,9 +126,11 @@ The prompts are intentionally short and human-like. They do not include required
 
 **Report preview**
 
-![A/B experiment report preview](docs/assets/growth-report-preview.svg)
+The preview below is rendered directly from the unedited DeepAnalyze Markdown report.
 
-DeepAnalyze produced the report from the short prompt above and the uploaded CSV files. The raw trace shows actual `stataskills.run_tool(...)` calls, including `read_csv`, `check_missing_values`, and A/B-style testing helpers.
+![A/B experiment report preview](docs/assets/growth-report-preview.png)
+
+DeepAnalyze produced this report from the short prompt above and the uploaded CSV files. The raw trace shows actual `stataskills.run_tool(...)` calls, including `read_csv`, `check_missing_values`, and `ab_ttest`.
 
 Open the full example:
 
