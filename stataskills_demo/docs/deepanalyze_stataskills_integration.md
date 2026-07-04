@@ -294,10 +294,6 @@ curl http://localhost:8000/v1/models
 /nfsdata/zyx/statabench/StatABench/examples/run_deepanalyze_showcase_report.py
 ```
 
-旧的医院专用 runner 也仍然保留：
+旧的医院专用 runner 已从 release 包中移除。这个脚本会基于抽取出的 facts 再发起报告改写请求，容易让人误解展示报告不是原始模型输出。
 
-```text
-/nfsdata/zyx/statabench/StatABench/examples/run_deepanalyze_hospital_report.py
-```
-
-这些更像工程调试或早期单任务实验，不建议作为主要展示报告。主要展示建议使用统一 runner 产出的三个短文件名原始报告。
+这些旧 showcase 更像工程调试或早期单任务实验，不建议作为主要展示报告。主要展示建议使用统一 runner 产出的三个短文件名原始报告。
