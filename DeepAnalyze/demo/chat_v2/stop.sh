@@ -1,7 +1,16 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-echo "Stopping AI Chat System"
-echo "======================="
+set -Eeuo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOG_DIR="$ROOT_DIR/logs"
+BACKEND_PORT="${DEEPANALYZE_BACKEND_PORT:-${BACKEND_PORT:-8200}}"
+FRONTEND_PORT="${FRONTEND_PORT:-4000}"
+
+cd "$ROOT_DIR"
+
+echo "Stopping DeepAnalyze WebUI v2"
+echo "============================="
 
 # Stop service by PID file
 stop_service() {
@@ -30,27 +39,26 @@ stop_service() {
 }
 
 # Stop services
-stop_service "Backend API" "logs/backend.pid"
-stop_service "React Frontend" "logs/frontend.pid"
+stop_service "Backend API" "$LOG_DIR/backend.pid"
+stop_service "Next.js Frontend" "$LOG_DIR/frontend.pid"
 
 echo ""
 echo "Cleaning up remaining processes..."
 
 # Kill by process name (just in case)
 pkill -f "python.*backend.py" 2>/dev/null && echo "   Cleaned up backend.py process." || true
-pkill -f "npm.*dev" 2>/dev/null && echo "   Cleaned up npm dev process." || true
-pkill -f "next.*dev" 2>/dev/null && echo "   Cleaned up next dev process." || true
+pkill -f "npm.*next dev" 2>/dev/null && echo "   Cleaned up npm next dev process." || true
+pkill -f "node_modules/next/dist/bin/next dev" 2>/dev/null && echo "   Cleaned up next dev process." || true
+pkill -f "next.*dev" 2>/dev/null && echo "   Cleaned up remaining next dev process." || true
 pkill -f "next-server" 2>/dev/null && echo "   Cleaned up next-server process." || true
-pkill -f "vite.*serve" 2>/dev/null && echo "   Cleaned up vite serve process." || true
-pkill -f "node.*vite" 2>/dev/null && echo "   Cleaned up node-vite process." || true
-pkill -f "react-scripts.*start" 2>/dev/null && echo "   Cleaned up react-scripts start process." || true
+pkill -f "next/dist/telemetry/detached-flush.js" 2>/dev/null && echo "   Cleaned up Next.js telemetry flush process." || true
 
 echo ""
 echo "Releasing ports..."
 
-# Release ports (sync with start.sh)
-FRONTEND_PORT=${FRONTEND_PORT:-4000}
-for port in 8100 8200 "$FRONTEND_PORT"; do
+# WebUI v2 starts only the backend and frontend ports. Workspace file APIs are
+# served by the backend; there is no separate 8100 process in this demo.
+for port in "$BACKEND_PORT" "$FRONTEND_PORT"; do
     # Only kill TCP LISTENers
     pids=$(lsof -tiTCP:"$port" -sTCP:LISTEN 2>/dev/null || true)
     if [ -n "$pids" ]; then
@@ -67,16 +75,17 @@ done
 
 echo ""
 echo "Checking for remaining processes..."
-remaining=$(ps aux | grep -E "(api\.py|backend\.py|npm.*dev|next.*dev|next-server|vite.*serve|react-scripts.*start|node.*vite)" | grep -v grep | wc -l)
+remaining_processes="$(ps aux | grep -E "(backend\.py|npm.*next dev|node_modules/next/dist/bin/next dev|next.*dev|next-server|next/dist/telemetry/detached-flush\.js)" | grep -v grep || true)"
+remaining=$(printf "%s\n" "$remaining_processes" | sed '/^[[:space:]]*$/d' | wc -l)
 if [ "$remaining" -eq 0 ]; then
     echo "   All processes have been stopped."
 else
     echo "   Warning: $remaining related processes are still running:"
-    ps aux | grep -E "(api\.py|backend\.py|npm.*dev|next.*dev|next-server|vite.*serve|react-scripts.*start|node.*vite)" | grep -v grep
+    printf "%s\n" "$remaining_processes"
 fi
 
 echo ""
 echo "System stopped successfully."
 echo ""
 echo "Log files are kept in the logs/ directory."
-echo "To restart the system: ./start.sh"
+echo "To restart the system: bash start.sh"

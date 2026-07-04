@@ -128,6 +128,8 @@ docker build -t deepanalyze-chat-exec:latest -f Dockerfile.exec .
 
 ## Run
 
+For remote-server startup and Cursor/SSH port forwarding, see the Chinese startup guide: [STARTUP_ZH.md](./STARTUP_ZH.md).
+
 ### Linux / macOS
 
 ```bash
@@ -160,7 +162,8 @@ Default addresses after startup:
 
 - Frontend: `http://localhost:4000`
 - Backend API: `http://localhost:8200`
-- File service: `http://localhost:8100`
+
+Workspace preview and download APIs are served by the backend in WebUI v2, so no separate `8100` service needs to be started or forwarded.
 
 ## PDF Export
 
