@@ -103,8 +103,6 @@ docker build -t deepanalyze-chat-exec:latest -f Dockerfile.exec .
 
 ## 如何运行
 
-远程服务器、Cursor 端口转发和从零启动流程见：[STARTUP_ZH.md](./STARTUP_ZH.md)。
-
 ### Linux / macOS
 
 ```bash
@@ -137,8 +135,7 @@ stop.bat
 
 - 前端：`http://localhost:4000`
 - 后端 API：`http://localhost:8200`
-
-WebUI v2 的 workspace 文件预览和下载接口由后端 API 提供，不需要单独启动或转发 `8100`。
+- 文件服务：`http://localhost:8100`
 
 ## PDF 导出
 
