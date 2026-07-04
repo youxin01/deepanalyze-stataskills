@@ -140,14 +140,53 @@ for browser WebUI usage.
 
 Minimal API example:
 
-```bash
-cd stataskills_demo
-python examples/run_deepanalyze_demo_tasks.py --task growth
+```python
+from pathlib import Path
+
+import requests
+
+api = "http://localhost:8200"
+files = [
+    Path("stataskills_demo/data/datasets83/conversion_data.csv"),
+    Path("stataskills_demo/data/datasets83/website_session_data.csv"),
+]
+
+file_ids = []
+for path in files:
+    with path.open("rb") as f:
+        resp = requests.post(
+            f"{api}/v1/files",
+            files={"file": (path.name, f, "text/csv")},
+            data={"purpose": "file-extract"},
+            timeout=120,
+        )
+    resp.raise_for_status()
+    file_ids.append(resp.json()["id"])
+
+resp = requests.post(
+    f"{api}/v1/chat/completions",
+    json={
+        "model": "DeepAnalyze-8B",
+        "messages": [
+            {
+                "role": "user",
+                "content": (
+                    "我上传了 conversion_data.csv 和 website_session_data.csv。"
+                    "请帮我判断 B 组是否值得继续放量，并用中文给出简短结论。"
+                ),
+                "file_ids": file_ids,
+            }
+        ],
+        "temperature": 0.2,
+    },
+    timeout=900,
+)
+resp.raise_for_status()
+print(resp.json()["choices"][0]["message"]["content"])
 ```
 
-This script uploads `conversion_data.csv` and `website_session_data.csv`, sends
-the A/B experiment prompt to `http://localhost:8200/v1/chat/completions`, and
-saves the raw trace plus Markdown report under `stataskills_demo/artifacts/reports/`.
+The code uploads two CSV files, sends their file IDs with a natural-language
+question, and prints the final DeepAnalyze response.
 
 ## Run Examples
 
