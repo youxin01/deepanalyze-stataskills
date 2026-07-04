@@ -183,11 +183,13 @@ before running it.
 
 Prompt:
 
-> I uploaded `conversion_data.csv` and `website_session_data.csv`.
+> 我上传了 `conversion_data.csv` 和 `website_session_data.csv`。
 >
-> We recently ran an A/B experiment and want to know whether group B is worth
-> rolling out further. Please check whether conversion and engagement differ
-> noticeably, and give a next-step recommendation.
+> 我们最近做了一个 A/B 实验，想知道 B 组是否值得继续放量。请帮我看转化率和用户参与度有没有明显差异，并给出下一步建议。
+>
+> 如果系统里有现成的统计分析工具，请直接用它们来判断差异，不用自己手写检验。
+>
+> 请用中文回答，结论别说得过度绝对。
 
 The preview below is rendered directly from the unedited DeepAnalyze Markdown
 report.
@@ -201,30 +203,10 @@ Open the full example:
 - Raw model trace: [`growth_raw.md`](stataskills_demo/artifacts/reports/growth_raw.md)
 - Validation: [`growth_validation.json`](stataskills_demo/artifacts/reports/growth_validation.json)
 
-## Validate StatASkills
-
-```bash
-cd stataskills_demo
-python scripts/verify_stataskills_all_tools.py
-```
-
-Expected result:
-
-```text
-Total cases: 55
-Passed: 55
-Failed: 0
-Public tools covered by primary PASS: 38 / 38
-```
-
 ## Related Projects
 
-- DeepAnalyze
-  - Code: [https://github.com/ruc-datalab/DeepAnalyze](https://github.com/ruc-datalab/DeepAnalyze)
-  - Paper: [https://arxiv.org/abs/2510.16872](https://arxiv.org/abs/2510.16872)
-- StatABench
-  - Code: [https://github.com/youxin01/StatABench](https://github.com/youxin01/StatABench)
-  - Paper: [https://arxiv.org/abs/2606.22977](https://arxiv.org/abs/2606.22977)
+- DeepAnalyze: [https://github.com/ruc-datalab/DeepAnalyze](https://github.com/ruc-datalab/DeepAnalyze)
+- StatABench: [https://github.com/youxin01/StatABench](https://github.com/youxin01/StatABench)
 
 ## License
 
