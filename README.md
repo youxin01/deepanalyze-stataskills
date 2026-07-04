@@ -2,6 +2,8 @@
 
 DeepAnalyze-StatASkills integrates the statistical toolkit from **StatABench** into the **DeepAnalyze** data science agent framework.
 
+It is built on the [DeepAnalyze paper](https://arxiv.org/abs/2510.16872) and the [StatABench paper](https://arxiv.org/abs/2606.22977).
+
 The goal is simple: when DeepAnalyze writes and executes analysis code, it can call a curated statistical toolkit through a stable Python interface instead of re-implementing statistical tests, regression models, survival analysis, time-series methods, A/B testing, or causal inference from scratch.
 
 ```python
@@ -160,11 +162,11 @@ Public tools covered by primary PASS: 38 / 38
 This project builds on:
 
 - **DeepAnalyze** by RUC-DataLab
-  - Code: https://github.com/ruc-datalab/DeepAnalyze
-  - Paper: https://arxiv.org/abs/2510.16872
+  - Code: [https://github.com/ruc-datalab/DeepAnalyze](https://github.com/ruc-datalab/DeepAnalyze)
+  - Paper: [https://arxiv.org/abs/2510.16872](https://arxiv.org/abs/2510.16872)
 - **StatABench**
-  - Code: https://github.com/youxin01/StatABench
-  - Paper: https://arxiv.org/abs/2606.22977
+  - Code: [https://github.com/youxin01/StatABench](https://github.com/youxin01/StatABench)
+  - Paper: [https://arxiv.org/abs/2606.22977](https://arxiv.org/abs/2606.22977)
 
 This repository extracts and packages the statistical toolkit from StatABench and integrates it into the DeepAnalyze framework for reproducible agentic statistical analysis.
 
