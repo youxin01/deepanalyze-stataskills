@@ -138,6 +138,17 @@ This API entrypoint is for programmatic use: batch reports, benchmark scripts,
 or integrating DeepAnalyze-StatASkills into another backend. It is not required
 for browser WebUI usage.
 
+Minimal API example:
+
+```bash
+cd stataskills_demo
+python examples/run_deepanalyze_demo_tasks.py --task growth
+```
+
+This script uploads `conversion_data.csv` and `website_session_data.csv`, sends
+the A/B experiment prompt to `http://localhost:8200/v1/chat/completions`, and
+saves the raw trace plus Markdown report under `stataskills_demo/artifacts/reports/`.
+
 ## Run Examples
 
 The repository includes three reproducible tasks:
@@ -148,18 +159,14 @@ The repository includes three reproducible tasks:
 | `hospital` | Hospital operations | correlation and regression analysis |
 | `policy` | Policy effect evaluation | DID-style causal analysis |
 
-Run one task:
-
-```bash
-cd stataskills_demo
-python examples/run_deepanalyze_demo_tasks.py --task growth
-```
-
 Run all tasks:
 
 ```bash
+cd stataskills_demo
 python examples/run_deepanalyze_demo_tasks.py --task all
 ```
+
+Use `--task hospital` or `--task policy` to run a different single task.
 
 Reports and raw traces are saved under:
 
