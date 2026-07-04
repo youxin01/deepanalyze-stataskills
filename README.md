@@ -58,14 +58,26 @@ pip install -r DeepAnalyze/requirements.txt
 pip install -e "stataskills_demo[full]"
 ```
 
-Install WebUI frontend dependencies if you want to use the browser interface:
+For the WebUI, install frontend dependencies once:
 
 ```bash
 cd DeepAnalyze/demo/chat_v2/frontend
 npm install
 ```
 
-## Start a Model Service
+## Choose a Way to Run
+
+There are two entrypoints. You usually need only one of them:
+
+| Entrypoint | Use it when | Start command |
+|---|---|---|
+| WebUI v2 | You want to upload files and interact in a browser. | `cd DeepAnalyze/demo/chat_v2 && bash start.sh` |
+| DeepAnalyze API | You want scripts, batch runs, benchmarks, or automated report generation. | `cd DeepAnalyze/API && python start_server.py` |
+
+Both entrypoints use a model endpoint such as `http://localhost:8000/v1`. Do not
+start both on the same default port unless you change one of their ports.
+
+## 1. Start a Model
 
 DeepAnalyze expects an OpenAI-compatible model endpoint at
 `http://localhost:8000/v1`.
@@ -85,7 +97,29 @@ python -m vllm.entrypoints.openai.api_server \
 You can also use another OpenAI-compatible provider through WebUI v2's
 `Custom Model` option.
 
-## Run DeepAnalyze API
+## 2A. Run WebUI v2
+
+```bash
+cd DeepAnalyze/demo/chat_v2
+cp .env.example .env
+bash start.sh
+```
+
+Open:
+
+```text
+http://localhost:4000
+```
+
+In the left panel:
+
+- choose `Local` if your model is running at `http://localhost:8000/v1`;
+- choose `Custom Model` for another OpenAI-compatible API provider.
+
+For WebUI usage, you do not need to start `DeepAnalyze/API/start_server.py`.
+WebUI v2 has its own backend in `DeepAnalyze/demo/chat_v2/backend.py`.
+
+## 2B. Run DeepAnalyze API
 
 ```bash
 cd DeepAnalyze/API
@@ -100,24 +134,9 @@ File server:     http://localhost:8100
 Model endpoint:  http://localhost:8000/v1
 ```
 
-## Run WebUI v2
-
-```bash
-cd DeepAnalyze/demo/chat_v2
-cp .env.example .env
-bash start.sh
-```
-
-Open the browser UI:
-
-```text
-http://localhost:4000
-```
-
-In the left panel:
-
-- choose `Local` if your model is running at `http://localhost:8000/v1`;
-- choose `Custom Model` for another OpenAI-compatible API provider.
+This API entrypoint is for programmatic use: batch reports, benchmark scripts,
+or integrating DeepAnalyze-StatASkills into another backend. It is not required
+for browser WebUI usage.
 
 ## Run Examples
 
@@ -148,11 +167,17 @@ Reports and raw traces are saved under:
 stataskills_demo/artifacts/reports/
 ```
 
+These report examples use the DeepAnalyze API entrypoint, so start
+`DeepAnalyze/API/start_server.py` before running them.
+
 Validate the WebUI backend path:
 
 ```bash
 python examples/run_webui_stataskills_demo.py --task growth
 ```
+
+This validation uses the WebUI backend, so start `DeepAnalyze/demo/chat_v2`
+before running it.
 
 ## Featured Example
 
