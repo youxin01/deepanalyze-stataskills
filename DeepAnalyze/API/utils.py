@@ -23,6 +23,41 @@ from functools import partial
 from config import WORKSPACE_BASE_DIR, HTTP_SERVER_PORT
 
 
+def _stataskills_demo_paths() -> List[Path]:
+    """Return existing stataskills_demo directories visible from this checkout."""
+    here = Path(__file__).resolve()
+    candidates: List[Path] = []
+    env_path = os.environ.get("STATASKILLS_DEMO_DIR")
+    if env_path:
+        candidates.append(Path(env_path).expanduser())
+    for base in here.parents:
+        candidates.append(base / "stataskills_demo")
+        candidates.append(base / "deepanalyze-stataskills-release" / "stataskills_demo")
+    paths: List[Path] = []
+    seen = set()
+    for path in candidates:
+        resolved = path.resolve()
+        if (resolved / "stataskills").is_dir() and resolved not in seen:
+            paths.append(resolved)
+            seen.add(resolved)
+    return paths
+
+
+def _prepend_pythonpath(env: Dict[str, str], paths: List[Path]) -> None:
+    existing = env.get("PYTHONPATH", "")
+    values: List[str] = []
+    seen = set()
+    for path in paths:
+        path_str = str(path)
+        if path_str not in seen:
+            values.append(path_str)
+            seen.add(path_str)
+    if existing:
+        values.append(existing)
+    if values:
+        env["PYTHONPATH"] = os.pathsep.join(values)
+
+
 STATASKILLS_PROMPT = """# Available Statistical Toolkit
 The Python package `stataskills` is installed in the code execution environment.
 For statistical work such as EDA, missingness/outlier checks, hypothesis tests,
@@ -179,6 +214,7 @@ def execute_code_safe(
         child_env = os.environ.copy()
         child_env.setdefault("MPLBACKEND", "Agg")
         child_env.setdefault("QT_QPA_PLATFORM", "offscreen")
+        _prepend_pythonpath(child_env, _stataskills_demo_paths())
         child_env.pop("DISPLAY", None)
 
         completed = subprocess.run(
@@ -219,6 +255,7 @@ async def execute_code_safe_async(
         child_env = os.environ.copy()
         child_env.setdefault("MPLBACKEND", "Agg")
         child_env.setdefault("QT_QPA_PLATFORM", "offscreen")
+        _prepend_pythonpath(child_env, _stataskills_demo_paths())
         child_env.pop("DISPLAY", None)
 
         # Use asyncio.subprocess for non-blocking execution
